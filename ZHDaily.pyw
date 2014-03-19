@@ -163,6 +163,6 @@ if __name__ == '__main__':
     root = Tk()
     root.geometry('480x640')
     root.title('知乎日报')
-    fav_browser = '"F:/Program Files/Opera x64/opera.exe" '
+    fav_browser = ''
     app = App(root)
     root.mainloop()
