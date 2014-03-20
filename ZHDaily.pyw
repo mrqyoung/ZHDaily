@@ -67,7 +67,6 @@ class App():
         def newListbox(self):
             listbox = Listbox(self.master, height=len(self.stories), selectmode=SINGLE, relief=FLAT)
             for story in self.stories: listbox.insert(END, story.title)
-            listbox.pack(fill=X, side=TOP, ipadx=16, padx=8)
             listbox.bind('<<ListboxSelect>>', self.openThisStory)
             return listbox
         def openThisStory(self, event):
@@ -124,19 +123,27 @@ class ZHDHelper():
     def getWebRaw(self): #Raise Errors
         userAgent = 'JUC (Linux; U; 2.3.7; zh-cn; MB200; 480*800) UCWEB7.9.3.103/139/999'
         headers = {'User-Agent': userAgent}
+        '''
         try: #python 3
             import urllib.request as Req
             request = Req.Request(self.url, None, headers)
             response = Req.urlopen(request)
         except ImportError: #python 2
-            response = getWebRaw2(headers)
+            response = self.getWebRaw2(headers)
+        '''
+        try:
+            import urllib.request as Req
+        except ImportError:
+            import urllib2 as Req
+        request = Req.Request(self.url, None, headers)
+        response = Req.urlopen(request)
         bytesWebRaw = response.read()
-        return bytesWebRaw.decode()
+        return bytesWebRaw.decode('utf-8')
 
-    def getWebRaw2(self, headers):
+    def getWebRaw2(self, headers):#del--
         import urllib2
-        request = urllib2.equest(self.url, None, headers)
-        return urllib2.open(request)
+        request = urllib2.Request(self.url, None, headers)
+        return urllib2.urlopen(request)
 
     def getStories(self):
         stories = []
