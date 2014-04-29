@@ -4,10 +4,11 @@
 # Show the list of zhihu-daily items
 #
 # History:
+# 2014-04-29 YW fix [ValueError: day is out of range for month]
 # 2014-03-18 Mr.Q.Young(Yorn Wat) created.
 #
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 try:
@@ -16,7 +17,8 @@ except ImportError:
     from Tkinter import *
 
 import os
-from datetime import date
+from datetime import date as D
+from datetime import timedelta as TimeDelta
 
 
 class App():
@@ -24,7 +26,7 @@ class App():
         self.master = self._initCanvas(parent)
         #self.master = parent
         today = date.today()
-        self.theDateBefore = today.replace(day = today.day + 2)
+        self.theDateBefore = today + TimeDelta(days=2)
         self.loadDaily()
         
     def _initCanvas(self, master):
@@ -47,7 +49,7 @@ class App():
         self.DailyFrame(self.master, storiesAndLabel).pack()
         
     def getTheDate(self, d):
-        return d.replace(day = d.day - 1)
+        return d - TimeDelta(days=1)
 
     def getStoriesAndLabel(self, date_before):
         zhdh = ZHDHelper(date_before.strftime('%Y%m%d'))
@@ -69,7 +71,7 @@ class App():
             for story in self.stories: listbox.insert(END, story.title)
             listbox.bind('<<ListboxSelect>>', self.openThisStory)
             return listbox
-        def openThisStory(self, event):
+        def openThisStory(self, event): #FIXME
             index = int(event.widget.curselection()[0])
             cmd = fav_browser + self.stories[index].share_url if fav_browser else 'start ' + self.stories[index].share_url
             print(cmd)
@@ -120,17 +122,9 @@ class ZHDHelper():
         #eg: http://news-at.zhihu.com/api/2/news/before/20140318
         self.date_label = None
 
-    def getWebRaw(self): #Raise Errors
+    def getWebRaw(self): #FIXME
         userAgent = 'JUC (Linux; U; 2.3.7; zh-cn; MB200; 480*800) UCWEB7.9.3.103/139/999'
         headers = {'User-Agent': userAgent}
-        '''
-        try: #python 3
-            import urllib.request as Req
-            request = Req.Request(self.url, None, headers)
-            response = Req.urlopen(request)
-        except ImportError: #python 2
-            response = self.getWebRaw2(headers)
-        '''
         try:
             import urllib.request as Req
         except ImportError:
