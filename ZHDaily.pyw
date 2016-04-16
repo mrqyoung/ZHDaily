@@ -95,7 +95,7 @@ import json
 
 class Story():
     ''' A Story/item '''
-    
+    __slots__ = ['id', 'title', 'share_url', 'image_source', 'url', 'image', 'pa_prefix', 'thumbnail']
     def __init__(self, i, t, s_u, img_s, u, img, ga, th = None):
         self.id = i
         self.title = t
